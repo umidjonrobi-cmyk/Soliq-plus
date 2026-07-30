@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Local env (real keys live in Railway/Supabase, not in git)
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
