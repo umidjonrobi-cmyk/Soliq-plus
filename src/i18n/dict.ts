@@ -147,6 +147,7 @@ const T = {
   'nav.assets': ['Asosiy vositalar', 'Асосий воситалар', 'Основные средства'],
   'nav.payroll': ['Ish haqi', 'Иш ҳақи', 'Зарплата'],
   'nav.reports': ['Hisobotlar', 'Ҳисоботлар', 'Отчёты'],
+  'nav.eimzo': ['Elektron imzo (ERI)', 'Электрон имзо (ЭРИ)', 'ЭЦП (E-IMZO)'],
   'nav.settings': ['Sozlamalar', 'Созламалар', 'Настройки'],
   'nav.group.main': ['Asosiy', 'Асосий', 'Основное'],
   'nav.group.ops': ['Operatsiyalar', 'Операциялар', 'Операции'],
@@ -411,6 +412,48 @@ const T = {
   ],
   'nf.title': ['Sahifa topilmadi', 'Саҳифа топилмади', 'Страница не найдена'],
   'nf.back': ['Bosh sahifaga', 'Бош саҳифага', 'На главную'],
+
+  // ─── E-IMZO / ERI ───────────────────────────────────────────────────
+  'eri.title': ['Elektron raqamli imzo', 'Электрон рақамли имзо', 'Электронная цифровая подпись'],
+  'eri.sub': [
+    'E-IMZO orqali hujjatlarni imzolash',
+    'E-IMZO орқали ҳужжатларни имзолаш',
+    'Подписание документов через E-IMZO',
+  ],
+  'eri.detecting': ['E-IMZO tekshirilmoqda...', 'E-IMZO текширилмоқда...', 'Проверка E-IMZO...'],
+  'eri.notFound': ['E-IMZO topilmadi', 'E-IMZO топилмади', 'E-IMZO не найден'],
+  'eri.notFoundDesc': [
+    'Imzolash uchun kompyuteringizda E-IMZO dasturi o‘rnatilgan va ishga tushirilgan bo‘lishi kerak. e-imzo.uz saytidan yuklab oling va qayta tekshiring.',
+    'Имзолаш учун компьютерингизда E-IMZO дастури ўрнатилган ва ишга туширилган бўлиши керак. e-imzo.uz сайтидан юклаб олинг ва қайта текширинг.',
+    'Для подписания на вашем компьютере должен быть установлен и запущен E-IMZO. Скачайте с e-imzo.uz и проверьте снова.',
+  ],
+  'eri.retry': ['Qayta tekshirish', 'Қайта текшириш', 'Проверить снова'],
+  'eri.detected': ['E-IMZO ulandi', 'E-IMZO уланди', 'E-IMZO подключён'],
+  'eri.certificates': ['Kalitlar (sertifikatlar)', 'Калитлар (сертификатлар)', 'Ключи (сертификаты)'],
+  'eri.noCerts': [
+    'Sertifikatlar topilmadi. ERI kalitingizni ulang.',
+    'Сертификатлар топилмади. ЭРИ калитингизни уланг.',
+    'Сертификаты не найдены. Подключите ключ ЭЦП.',
+  ],
+  'eri.owner': ['Egasi', 'Эгаси', 'Владелец'],
+  'eri.validTo': ['Amal qiladi', 'Амал қилади', 'Действует до'],
+  'eri.expired': ['Muddati tugagan', 'Муддати тугаган', 'Просрочен'],
+  'eri.select': ['Tanlash', 'Танлаш', 'Выбрать'],
+  'eri.selected': ['Tanlangan', 'Танланган', 'Выбран'],
+  'eri.document': ['Imzolanadigan hujjat', 'Имзоланадиган ҳужжат', 'Документ для подписи'],
+  'eri.sign': ['Imzolash', 'Имзолаш', 'Подписать'],
+  'eri.signing': ['Imzolanmoqda...', 'Имзоланмоқда...', 'Подписание...'],
+  'eri.signed': ['Hujjat imzolandi', 'Ҳужжат имзоланди', 'Документ подписан'],
+  'eri.signature': ['Imzo (PKCS#7)', 'Имзо (PKCS#7)', 'Подпись (PKCS#7)'],
+  'eri.copy': ['Nusxalash', 'Нусхалаш', 'Копировать'],
+  'eri.copied': ['Nusxalandi', 'Нусхаланди', 'Скопировано'],
+  'eri.error': ['Imzolashda xatolik', 'Имзолашда хатолик', 'Ошибка подписания'],
+  'eri.selectFirst': ['Avval kalitni tanlang', 'Аввал калитни танланг', 'Сначала выберите ключ'],
+  'eri.localNote': [
+    'Xavfsizlik: xususiy kalit kompyuteringizdan chiqmaydi — imzolash mahalliy amalga oshiriladi.',
+    'Хавфсизлик: хусусий калит компьютерингиздан чиқмайди — имзолаш маҳаллий амалга оширилади.',
+    'Безопасность: закрытый ключ не покидает ваш компьютер — подпись создаётся локально.',
+  ],
 } as const
 
 export type Key = keyof typeof T

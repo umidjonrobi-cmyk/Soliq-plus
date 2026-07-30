@@ -12,6 +12,7 @@ import {
   Truck,
   Users,
   FileBarChart,
+  ShieldCheck,
   Settings,
   Sun,
   Moon,
@@ -60,7 +61,10 @@ const GROUPS: NavGroup[] = [
   },
   {
     titleKey: 'nav.group.other',
-    items: [{ to: '/app/settings', icon: Settings, key: 'nav.settings' }],
+    items: [
+      { to: '/app/eimzo', icon: ShieldCheck, key: 'nav.eimzo' },
+      { to: '/app/settings', icon: Settings, key: 'nav.settings' },
+    ],
   },
 ]
 

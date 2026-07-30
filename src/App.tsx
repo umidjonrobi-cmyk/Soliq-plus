@@ -15,6 +15,7 @@ import Inventory from './pages/Inventory'
 import Assets from './pages/Assets'
 import Payroll from './pages/Payroll'
 import Reports from './pages/Reports'
+import Eimzo from './pages/Eimzo'
 import Settings from './pages/Settings'
 import NotFound from './pages/NotFound'
 
@@ -45,6 +46,7 @@ export default function App() {
             <Route path="/app/assets" element={<Protected><Assets /></Protected>} />
             <Route path="/app/payroll" element={<Protected><Payroll /></Protected>} />
             <Route path="/app/reports" element={<Protected><Reports /></Protected>} />
+            <Route path="/app/eimzo" element={<Protected><Eimzo /></Protected>} />
             <Route path="/app/settings" element={<Protected><Settings /></Protected>} />
 
             <Route path="*" element={<NotFound />} />
