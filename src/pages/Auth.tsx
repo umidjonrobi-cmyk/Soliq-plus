@@ -131,7 +131,7 @@ export function Register() {
   const { t } = useT()
   const { login } = useStore()
   const navigate = useNavigate()
-  const [form, setForm] = useState({ name: '', company: '', email: '', password: '' })
+  const [form, setForm] = useState({ name: '', company: '', email: '', password: '', confirm: '' })
   const [agree, setAgree] = useState(true)
   const [err, setErr] = useState<Record<string, string>>({})
 
@@ -144,6 +144,8 @@ export function Register() {
     if (!form.company.trim()) next.company = t('auth.err.required')
     if (!emailOk(form.email)) next.email = t('auth.err.email')
     if (form.password.length < 6) next.password = t('auth.err.password')
+    if (!form.confirm) next.confirm = t('auth.err.required')
+    else if (form.confirm !== form.password) next.confirm = t('auth.err.confirmMismatch')
     setErr(next)
     if (Object.keys(next).length || !agree) return
     login({ name: form.name, email: form.email, company: form.company })
@@ -171,6 +173,9 @@ export function Register() {
         </Field>
         <Field label={t('auth.password')} error={err.password}>
           <Input type="password" value={form.password} onChange={set('password')} placeholder="••••••••" autoComplete="new-password" />
+        </Field>
+        <Field label={t('auth.confirmPassword')} error={err.confirm}>
+          <Input type="password" value={form.confirm} onChange={set('confirm')} placeholder="••••••••" autoComplete="new-password" />
         </Field>
         <label className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
           <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 accent-[#2a78d6]" />

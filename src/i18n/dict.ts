@@ -96,6 +96,12 @@ const T = {
     'Пароль минимум 6 символов',
   ],
   'auth.err.required': ['Maydonni toʻldiring', 'Майдонни тўлдиринг', 'Заполните поле'],
+  'auth.confirmPassword': ['Parolni tasdiqlang', 'Паролни тасдиқланг', 'Подтвердите пароль'],
+  'auth.err.confirmMismatch': [
+    'Parollar mos kelmadi',
+    'Пароллар мос келмади',
+    'Пароли не совпадают',
+  ],
 
   // ─── Marketing / landing ────────────────────────────────────────────
   'mk.heroTitle': [
