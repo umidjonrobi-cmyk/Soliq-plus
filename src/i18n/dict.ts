@@ -1,0 +1,424 @@
+export type Lang = 'uz' | 'cy' | 'ru'
+
+export const LANGS: { code: Lang; label: string; short: string }[] = [
+  { code: 'uz', label: "O'zbekcha", short: 'UZ' },
+  { code: 'cy', label: 'Ўзбекча', short: 'ЎЗ' },
+  { code: 'ru', label: 'Русский', short: 'RU' },
+]
+
+/** Every string is [latin, cyrillic, russian]. */
+const T = {
+  // ─── Brand / generic ────────────────────────────────────────────────
+  'app.name': ['UZBalance', 'UZBalance', 'UZBalance'],
+  'app.tagline': [
+    'Onlayn buxgalteriya platformasi',
+    'Онлайн бухгалтерия платформаси',
+    'Онлайн-платформа бухучёта',
+  ],
+  'common.save': ['Saqlash', 'Сақлаш', 'Сохранить'],
+  'common.cancel': ['Bekor qilish', 'Бекор қилиш', 'Отмена'],
+  'common.add': ["Qo'shish", 'Қўшиш', 'Добавить'],
+  'common.edit': ['Tahrirlash', 'Таҳрирлаш', 'Изменить'],
+  'common.delete': ["O'chirish", 'Ўчириш', 'Удалить'],
+  'common.search': ['Qidirish...', 'Қидириш...', 'Поиск...'],
+  'common.filter': ['Filtr', 'Фильтр', 'Фильтр'],
+  'common.all': ['Barchasi', 'Барчаси', 'Все'],
+  'common.total': ['Jami', 'Жами', 'Итого'],
+  'common.period': ['Davr', 'Давр', 'Период'],
+  'common.date': ['Sana', 'Сана', 'Дата'],
+  'common.amount': ['Summa', 'Сумма', 'Сумма'],
+  'common.currency': ["so'm", 'сўм', 'сум'],
+  'common.description': ['Izoh', 'Изоҳ', 'Описание'],
+  'common.number': ['Raqam', 'Рақам', 'Номер'],
+  'common.status': ['Holat', 'Ҳолат', 'Статус'],
+  'common.actions': ['Amallar', 'Амаллар', 'Действия'],
+  'common.export': ['Eksport', 'Экспорт', 'Экспорт'],
+  'common.print': ['Chop etish', 'Чоп этиш', 'Печать'],
+  'common.empty': [
+    "Ma'lumot topilmadi",
+    'Маълумот топилмади',
+    'Данные не найдены',
+  ],
+  'common.demo': ['Demo', 'Демо', 'Демо'],
+  'common.soon': ['Tez orada', 'Тез орада', 'Скоро'],
+  'common.debit': ['Debet', 'Дебет', 'Дебет'],
+  'common.credit': ['Kredit', 'Кредит', 'Кредит'],
+  'common.balance': ['Qoldiq', 'Қолдиқ', 'Остаток'],
+  'common.account': ['Hisobvaraq', 'Ҳисобварақ', 'Счёт'],
+  'common.name': ['Nomi', 'Номи', 'Наименование'],
+  'common.qty': ['Miqdor', 'Миқдор', 'Кол-во'],
+  'common.price': ['Narx', 'Нарх', 'Цена'],
+  'common.close': ['Yopish', 'Ёпиш', 'Закрыть'],
+
+  // ─── Auth ───────────────────────────────────────────────────────────
+  'auth.login': ['Kirish', 'Кириш', 'Вход'],
+  'auth.register': ["Ro'yxatdan o'tish", 'Рўйхатдан ўтиш', 'Регистрация'],
+  'auth.logout': ['Chiqish', 'Чиқиш', 'Выйти'],
+  'auth.email': ['Elektron pochta', 'Электрон почта', 'Эл. почта'],
+  'auth.password': ['Parol', 'Парол', 'Пароль'],
+  'auth.fullName': ['F.I.O.', 'Ф.И.Ш.', 'Ф.И.О.'],
+  'auth.company': ['Korxona nomi', 'Корхона номи', 'Название компании'],
+  'auth.phone': ['Telefon', 'Телефон', 'Телефон'],
+  'auth.remember': ['Meni eslab qol', 'Мени эслаб қол', 'Запомнить меня'],
+  'auth.forgot': ['Parolni unutdingizmi?', 'Паролни унутдингизми?', 'Забыли пароль?'],
+  'auth.noAccount': ['Hisobingiz yoʻqmi?', 'Ҳисобингиз йўқми?', 'Нет аккаунта?'],
+  'auth.hasAccount': ['Hisobingiz bormi?', 'Ҳисобингиз борми?', 'Уже есть аккаунт?'],
+  'auth.loginTitle': ['Tizimga kirish', 'Тизимга кириш', 'Вход в систему'],
+  'auth.loginSub': [
+    'Hisobingizga kirib, ishni davom ettiring',
+    'Ҳисобингизга кириб, ишни давом эттиринг',
+    'Войдите в аккаунт и продолжите работу',
+  ],
+  'auth.registerTitle': ['Yangi hisob yaratish', 'Янги ҳисоб яратиш', 'Создать аккаунт'],
+  'auth.registerSub': [
+    '14 kunlik bepul sinov davri. Karta talab qilinmaydi.',
+    '14 кунлик бепул синов даври. Карта талаб қилинмайди.',
+    '14 дней бесплатно. Карта не требуется.',
+  ],
+  'auth.agree': [
+    'Foydalanish shartlariga roziman',
+    'Фойдаланиш шартларига розиман',
+    'Согласен с условиями использования',
+  ],
+  'auth.demoHint': [
+    'Demo rejim: istalgan pochta va parol bilan kiring',
+    'Демо режим: исталган почта ва парол билан киринг',
+    'Демо-режим: войдите с любой почтой и паролем',
+  ],
+  'auth.err.email': [
+    "To'g'ri elektron pochta kiriting",
+    'Тўғри электрон почта киритинг',
+    'Введите корректный e-mail',
+  ],
+  'auth.err.password': [
+    "Parol kamida 6 belgidan iborat bo'lsin",
+    'Парол камида 6 белгидан иборат бўлсин',
+    'Пароль минимум 6 символов',
+  ],
+  'auth.err.required': ['Maydonni toʻldiring', 'Майдонни тўлдиринг', 'Заполните поле'],
+
+  // ─── Marketing / landing ────────────────────────────────────────────
+  'mk.heroTitle': [
+    "O'zbekiston buxgalteriyasi — bitta oynada",
+    'Ўзбекистон бухгалтерияси — битта ойнада',
+    'Бухгалтерия Узбекистана — в одном окне',
+  ],
+  'mk.heroSub': [
+    "O'tkazmalar, kassa, bank, ombor va hisobotlar. Milliy hisobvaraqlar rejasi asosida, brauzerdan chiqmasdan.",
+    'Ўтказмалар, касса, банк, омбор ва ҳисоботлар. Миллий ҳисобварақлар режаси асосида, браузердан чиқмасдан.',
+    'Проводки, касса, банк, склад и отчёты. На базе национального плана счетов, прямо в браузере.',
+  ],
+  'mk.cta': ['Bepul boshlash', 'Бепул бошлаш', 'Начать бесплатно'],
+  'mk.ctaDemo': ['Demo koʻrish', 'Демо кўриш', 'Смотреть демо'],
+  'mk.f1.t': ['Milliy hisobvaraqlar rejasi', 'Миллий ҳисобварақлар режаси', 'Национальный план счетов'],
+  'mk.f1.d': [
+    "0100 dan 9900 gacha — barcha schyotlar tayyor holda.",
+    '0100 дан 9900 гача — барча счётлар тайёр ҳолда.',
+    'От 0100 до 9900 — все счета уже готовы.',
+  ],
+  'mk.f2.t': ['Avtomatik hisobotlar', 'Автоматик ҳисоботлар', 'Автоматические отчёты'],
+  'mk.f2.d': [
+    'Balans, foyda-zarar, aylanma-saldo va bosh kitob — bir klikda.',
+    'Баланс, фойда-зарар, айланма-сальдо ва бош китоб — бир кликда.',
+    'Баланс, ОПУ, оборотно-сальдовая и главная книга — в один клик.',
+  ],
+  'mk.f3.t': ['Bulutda va xavfsiz', 'Булутда ва хавфсиз', 'В облаке и безопасно'],
+  'mk.f3.d': [
+    "Ma'lumotlar shifrlanadi, har kuni zaxira nusxa olinadi.",
+    'Маълумотлар шифрланади, ҳар куни захира нусха олинади.',
+    'Данные шифруются, ежедневное резервное копирование.',
+  ],
+
+  // ─── Navigation ─────────────────────────────────────────────────────
+  'nav.dashboard': ['Boshqaruv paneli', 'Бошқарув панели', 'Панель управления'],
+  'nav.companies': ['Korxonalar', 'Корхоналар', 'Организации'],
+  'nav.accounts': ['Hisobvaraqlar rejasi', 'Ҳисобварақлар режаси', 'План счетов'],
+  'nav.entries': ["O'tkazmalar", 'Ўтказмалар', 'Проводки'],
+  'nav.cash': ['Kassa', 'Касса', 'Касса'],
+  'nav.bank': ['Bank', 'Банк', 'Банк'],
+  'nav.trade': ['Xarid va sotuv', 'Харид ва сотув', 'Покупки и продажи'],
+  'nav.inventory': ['Ombor', 'Омбор', 'Склад'],
+  'nav.assets': ['Asosiy vositalar', 'Асосий воситалар', 'Основные средства'],
+  'nav.payroll': ['Ish haqi', 'Иш ҳақи', 'Зарплата'],
+  'nav.reports': ['Hisobotlar', 'Ҳисоботлар', 'Отчёты'],
+  'nav.settings': ['Sozlamalar', 'Созламалар', 'Настройки'],
+  'nav.group.main': ['Asosiy', 'Асосий', 'Основное'],
+  'nav.group.ops': ['Operatsiyalar', 'Операциялар', 'Операции'],
+  'nav.group.acct': ['Hisob', 'Ҳисоб', 'Учёт'],
+  'nav.group.other': ['Boshqa', 'Бошқа', 'Прочее'],
+
+  // ─── Dashboard ──────────────────────────────────────────────────────
+  'dash.title': ['Boshqaruv paneli', 'Бошқарув панели', 'Панель управления'],
+  'dash.hello': ['Xush kelibsiz', 'Хуш келибсиз', 'Добро пожаловать'],
+  'dash.kpi.revenue': ['Sotuvdan tushum', 'Сотувдан тушум', 'Выручка'],
+  'dash.kpi.expense': ['Xarajatlar', 'Харажатлар', 'Расходы'],
+  'dash.kpi.profit': ['Sof foyda', 'Соф фойда', 'Чистая прибыль'],
+  'dash.kpi.receivable': ['Debitorlik qarzi', 'Дебиторлик қарзи', 'Дебиторка'],
+  'dash.kpi.payable': ['Kreditorlik qarzi', 'Кредиторлик қарзи', 'Кредиторка'],
+  'dash.kpi.cash': ['Kassa qoldigʻi', 'Касса қолдиғи', 'Остаток в кассе'],
+  'dash.kpi.bank': ['Bank qoldigʻi', 'Банк қолдиғи', 'Остаток в банке'],
+  'dash.chart.flow': [
+    'Tushum va xarajat dinamikasi',
+    'Тушум ва харажат динамикаси',
+    'Динамика доходов и расходов',
+  ],
+  'dash.chart.flowSub': [
+    '2026-yil, oylar kesimida, mln soʻm',
+    '2026-йил, ойлар кесимида, млн сўм',
+    '2026 год, по месяцам, млн сум',
+  ],
+  'dash.chart.expenses': [
+    'Xarajatlar tarkibi',
+    'Харажатлар таркиби',
+    'Структура расходов',
+  ],
+  'dash.chart.expensesSub': [
+    'Joriy oy, mln soʻm',
+    'Жорий ой, млн сўм',
+    'Текущий месяц, млн сум',
+  ],
+  'dash.recent': ['Soʻnggi oʻtkazmalar', 'Сўнгги ўтказмалар', 'Последние проводки'],
+  'dash.tasks': ['Muddatli vazifalar', 'Муддатли вазифалар', 'Ближайшие задачи'],
+  'dash.viewAll': ['Barchasini koʻrish', 'Барчасини кўриш', 'Смотреть все'],
+  'dash.vsPrev': [
+    'oʻtgan oyga nisbatan',
+    'ўтган ойга нисбатан',
+    'к прошлому месяцу',
+  ],
+  'dash.table': ['Jadval koʻrinishi', 'Жадвал кўриниши', 'Таблица'],
+  'dash.month': ['Oy', 'Ой', 'Месяц'],
+
+  // ─── Companies ──────────────────────────────────────────────────────
+  'co.title': ['Korxonalar', 'Корхоналар', 'Организации'],
+  'co.sub': [
+    'Bitta hisobda bir nechta korxona yuriting',
+    'Битта ҳисобда бир нечта корхона юритинг',
+    'Ведите несколько организаций в одном аккаунте',
+  ],
+  'co.new': ['Yangi korxona', 'Янги корхона', 'Новая организация'],
+  'co.inn': ['STIR (INN)', 'СТИР (ИНН)', 'ИНН'],
+  'co.oked': ['IFUT (OKED)', 'ИФУТ (ОКЭД)', 'ОКЭД'],
+  'co.director': ['Rahbar', 'Раҳбар', 'Руководитель'],
+  'co.accountant': ['Bosh buxgalter', 'Бош бухгалтер', 'Главный бухгалтер'],
+  'co.address': ['Manzil', 'Манзил', 'Адрес'],
+  'co.taxMode': ['Soliq rejimi', 'Солиқ режими', 'Налоговый режим'],
+  'co.taxMode.general': ['Umumbelgilangan', 'Умумбелгиланган', 'Общий режим'],
+  'co.taxMode.simple': ['Soddalashtirilgan', 'Соддалаштирилган', 'Упрощённый'],
+  'co.active': ['Faol', 'Фаол', 'Активна'],
+  'co.current': ['Joriy', 'Жорий', 'Текущая'],
+  'co.select': ['Tanlash', 'Танлаш', 'Выбрать'],
+
+  // ─── Chart of accounts ──────────────────────────────────────────────
+  'acc.title': ['Hisobvaraqlar rejasi', 'Ҳисобварақлар режаси', 'План счетов'],
+  'acc.sub': [
+    'Milliy standart asosidagi schyotlar',
+    'Миллий стандарт асосидаги счётлар',
+    'Счета по национальному стандарту',
+  ],
+  'acc.code': ['Kod', 'Код', 'Код'],
+  'acc.type': ['Turi', 'Тури', 'Тип'],
+  'acc.type.asset': ['Aktiv', 'Актив', 'Актив'],
+  'acc.type.liability': ['Passiv', 'Пассив', 'Пассив'],
+  'acc.type.equity': ['Kapital', 'Капитал', 'Капитал'],
+  'acc.type.income': ['Daromad', 'Даромад', 'Доход'],
+  'acc.type.expense': ['Xarajat', 'Харажат', 'Расход'],
+
+  // ─── Entries ────────────────────────────────────────────────────────
+  'en.title': ["O'tkazmalar", 'Ўтказмалар', 'Проводки'],
+  'en.sub': [
+    'Debet va kredit boʻyicha buxgalteriya yozuvlari',
+    'Дебет ва кредит бўйича бухгалтерия ёзувлари',
+    'Бухгалтерские записи по дебету и кредиту',
+  ],
+  'en.new': ['Yangi oʻtkazma', 'Янги ўтказма', 'Новая проводка'],
+  'en.doc': ['Hujjat', 'Ҳужжат', 'Документ'],
+  'en.posted': ["O'tkazilgan", 'Ўтказилган', 'Проведена'],
+  'en.draft': ['Qoralama', 'Қоралама', 'Черновик'],
+  'en.dt': ['Dt', 'Дт', 'Дт'],
+  'en.ct': ['Kt', 'Кт', 'Кт'],
+  'en.saved': ['Oʻtkazma saqlandi', 'Ўтказма сақланди', 'Проводка сохранена'],
+  'en.balanceErr': [
+    'Debet va kredit summasi teng emas',
+    'Дебет ва кредит суммаси тенг эмас',
+    'Дебет и кредит не совпадают',
+  ],
+
+  // ─── Cash / Bank ────────────────────────────────────────────────────
+  'cb.cashTitle': ['Kassa', 'Касса', 'Касса'],
+  'cb.cashSub': [
+    'Naqd pul kirim va chiqim orderlari',
+    'Нақд пул кирим ва чиқим ордерлари',
+    'Приходные и расходные кассовые ордера',
+  ],
+  'cb.bankTitle': ['Bank', 'Банк', 'Банк'],
+  'cb.bankSub': [
+    'Hisob-kitob schyoti boʻyicha koʻchirma',
+    'Ҳисоб-китоб счёти бўйича кўчирма',
+    'Выписка по расчётному счёту',
+  ],
+  'cb.in': ['Kirim', 'Кирим', 'Приход'],
+  'cb.out': ['Chiqim', 'Чиқим', 'Расход'],
+  'cb.opening': ['Boshlangʻich qoldiq', 'Бошланғич қолдиқ', 'Входящий остаток'],
+  'cb.closing': ['Yakuniy qoldiq', 'Якуний қолдиқ', 'Исходящий остаток'],
+  'cb.counterparty': ['Kontragent', 'Контрагент', 'Контрагент'],
+  'cb.newIn': ['Kirim orderi', 'Кирим ордери', 'Приходный ордер'],
+  'cb.newOut': ['Chiqim orderi', 'Чиқим ордери', 'Расходный ордер'],
+  'cb.account': ['Hisob raqami', 'Ҳисоб рақами', 'Расчётный счёт'],
+  'cb.bankName': ['Bank nomi', 'Банк номи', 'Банк'],
+  'cb.mfo': ['MFO', 'МФО', 'МФО'],
+
+  // ─── Trade ──────────────────────────────────────────────────────────
+  'tr.title': ['Xarid va sotuv', 'Харид ва сотув', 'Покупки и продажи'],
+  'tr.sub': [
+    'Hisobvaraq-fakturalar va shartnomalar',
+    'Ҳисобварақ-фактуралар ва шартномалар',
+    'Счета-фактуры и договоры',
+  ],
+  'tr.sales': ['Sotuv', 'Сотув', 'Продажи'],
+  'tr.purchases': ['Xarid', 'Харид', 'Покупки'],
+  'tr.invoice': ['Faktura', 'Фактура', 'Счёт-фактура'],
+  'tr.vat': ['QQS', 'ҚҚС', 'НДС'],
+  'tr.withVat': ['QQS bilan', 'ҚҚС билан', 'С НДС'],
+  'tr.paid': ['Toʻlangan', 'Тўланган', 'Оплачен'],
+  'tr.unpaid': ['Toʻlanmagan', 'Тўланмаган', 'Не оплачен'],
+  'tr.partial': ['Qisman', 'Қисман', 'Частично'],
+
+  // ─── Inventory ──────────────────────────────────────────────────────
+  'inv.title': ['Ombor', 'Омбор', 'Склад'],
+  'inv.sub': [
+    'Tovar-moddiy zaxiralar qoldigʻi',
+    'Товар-моддий захиралар қолдиғи',
+    'Остатки товарно-материальных запасов',
+  ],
+  'inv.sku': ['Artikul', 'Артикул', 'Артикул'],
+  'inv.unit': ['Oʻlchov', 'Ўлчов', 'Ед. изм.'],
+  'inv.cost': ['Tannarx', 'Таннарх', 'Себестоимость'],
+  'inv.value': ['Qiymati', 'Қиймати', 'Стоимость'],
+  'inv.low': ['Kam qoldi', 'Кам қолди', 'Мало'],
+  'inv.ok': ['Yetarli', 'Етарли', 'Достаточно'],
+
+  // ─── Fixed assets ───────────────────────────────────────────────────
+  'fa.title': ['Asosiy vositalar', 'Асосий воситалар', 'Основные средства'],
+  'fa.sub': [
+    'Eskirish va qoldiq qiymat hisobi',
+    'Эскириш ва қолдиқ қиймат ҳисоби',
+    'Учёт амортизации и остаточной стоимости',
+  ],
+  'fa.initial': ['Boshlangʻich qiymat', 'Бошланғич қиймат', 'Первоначальная стоимость'],
+  'fa.depreciation': ['Eskirish', 'Эскириш', 'Амортизация'],
+  'fa.residual': ['Qoldiq qiymat', 'Қолдиқ қиймат', 'Остаточная стоимость'],
+  'fa.inService': ['Ishga tushgan', 'Ишга тушган', 'Введено в эксплуатацию'],
+  'fa.life': ['Xizmat muddati', 'Хизмат муддати', 'Срок службы'],
+  'fa.years': ['yil', 'йил', 'лет'],
+
+  // ─── Payroll ────────────────────────────────────────────────────────
+  'pr.title': ['Ish haqi', 'Иш ҳақи', 'Зарплата'],
+  'pr.sub': [
+    'Xodimlar boʻyicha hisob-kitob',
+    'Ходимлар бўйича ҳисоб-китоб',
+    'Расчёт по сотрудникам',
+  ],
+  'pr.employee': ['Xodim', 'Ходим', 'Сотрудник'],
+  'pr.position': ['Lavozim', 'Лавозим', 'Должность'],
+  'pr.gross': ['Hisoblangan', 'Ҳисобланган', 'Начислено'],
+  'pr.incomeTax': ['JShDS (12%)', 'ЖШДС (12%)', 'НДФЛ (12%)'],
+  'pr.pension': ['INPS (0.1%)', 'ИНПС (0.1%)', 'ИНПС (0.1%)'],
+  'pr.net': ['Qoʻlga tegadi', 'Қўлга тегади', 'К выдаче'],
+  'pr.social': ['Ijtimoiy soliq (12%)', 'Ижтимоий солиқ (12%)', 'Соцналог (12%)'],
+
+  // ─── Reports ────────────────────────────────────────────────────────
+  'rp.title': ['Hisobotlar', 'Ҳисоботлар', 'Отчёты'],
+  'rp.sub': [
+    'Buxgalteriya va boshqaruv hisobotlari',
+    'Бухгалтерия ва бошқарув ҳисоботлари',
+    'Бухгалтерская и управленческая отчётность',
+  ],
+  'rp.balance': ['Buxgalteriya balansi', 'Бухгалтерия баланси', 'Бухгалтерский баланс'],
+  'rp.pl': ['Foyda va zarar', 'Фойда ва зарар', 'Прибыли и убытки'],
+  'rp.tb': ['Aylanma-saldo vedomosti', 'Айланма-сальдо ведомости', 'Оборотно-сальдовая'],
+  'rp.gl': ['Bosh kitob', 'Бош китоб', 'Главная книга'],
+  'rp.assets': ['AKTIV', 'АКТИВ', 'АКТИВ'],
+  'rp.liabilities': ['PASSIV', 'ПАССИВ', 'ПАССИВ'],
+  'rp.longTerm': ['Uzoq muddatli aktivlar', 'Узоқ муддатли активлар', 'Долгосрочные активы'],
+  'rp.currentAssets': ['Joriy aktivlar', 'Жорий активлар', 'Текущие активы'],
+  'rp.equity': ["O'z mablagʻlari manbalari", 'Ўз маблағлари манбалари', 'Источники собственных средств'],
+  'rp.obligations': ['Majburiyatlar', 'Мажбуриятлар', 'Обязательства'],
+  'rp.balanceTotal': ['Balans jami', 'Баланс жами', 'Баланс'],
+  'rp.startBalance': ['Davr boshiga qoldiq', 'Давр бошига қолдиқ', 'Сальдо на начало'],
+  'rp.turnover': ['Davr aylanmasi', 'Давр айланмаси', 'Обороты за период'],
+  'rp.endBalance': ['Davr oxiriga qoldiq', 'Давр охирига қолдиқ', 'Сальдо на конец'],
+  'rp.revenue': ['Sotuvdan sof tushum', 'Сотувдан соф тушум', 'Чистая выручка'],
+  'rp.cogs': ['Sotilgan tovar tannarxi', 'Сотилган товар таннархи', 'Себестоимость продаж'],
+  'rp.grossProfit': ['Yalpi foyda', 'Ялпи фойда', 'Валовая прибыль'],
+  'rp.opex': ['Davr xarajatlari', 'Давр харажатлари', 'Расходы периода'],
+  'rp.operProfit': ['Operatsion foyda', 'Операцион фойда', 'Операционная прибыль'],
+  'rp.taxExpense': ['Foyda soligʻi', 'Фойда солиғи', 'Налог на прибыль'],
+  'rp.netProfit': ['Sof foyda', 'Соф фойда', 'Чистая прибыль'],
+  'rp.balanced': ['Balans teng', 'Баланс тенг', 'Баланс сходится'],
+  'rp.pdf': ['PDF yuklab olish', 'PDF юклаб олиш', 'Скачать PDF'],
+  'rp.excel': ['Excel yuklab olish', 'Excel юклаб олиш', 'Скачать Excel'],
+
+  // ─── Settings ───────────────────────────────────────────────────────
+  'st.title': ['Sozlamalar', 'Созламалар', 'Настройки'],
+  'st.sub': [
+    'Profil, korxona va tizim sozlamalari',
+    'Профил, корхона ва тизим созламалари',
+    'Профиль, организация и система',
+  ],
+  'st.profile': ['Profil', 'Профил', 'Профиль'],
+  'st.appearance': ['Koʻrinish', 'Кўриниш', 'Оформление'],
+  'st.language': ['Til', 'Тил', 'Язык'],
+  'st.theme': ['Mavzu', 'Мавзу', 'Тема'],
+  'st.theme.light': ['Yorugʻ', 'Ёруғ', 'Светлая'],
+  'st.theme.dark': ['Qorongʻu', 'Қоронғу', 'Тёмная'],
+  'st.integrations': ['Integratsiyalar', 'Интеграциялар', 'Интеграции'],
+  'st.int.efaktura': [
+    'Elektron hisobvaraq-faktura',
+    'Электрон ҳисобварақ-фактура',
+    'Электронный счёт-фактура',
+  ],
+  'st.int.tax': ['Soliq qoʻmitasi', 'Солиқ қўмитаси', 'Налоговый комитет'],
+  'st.int.bank': ['Onlayn bank', 'Онлайн банк', 'Онлайн-банк'],
+  'st.int.eri': ['Elektron raqamli imzo', 'Электрон рақамли имзо', 'ЭЦП'],
+  'st.int.ai': ['AI yordamchi', 'AI ёрдамчи', 'AI-помощник'],
+  'st.connected': ['Ulangan', 'Уланган', 'Подключено'],
+  'st.notConnected': ['Ulanmagan', 'Уланмаган', 'Не подключено'],
+  'st.connect': ['Ulash', 'Улаш', 'Подключить'],
+  'st.saved': ['Sozlamalar saqlandi', 'Созламалар сақланди', 'Настройки сохранены'],
+  'st.danger': ['Xavfli hudud', 'Хавфли ҳудуд', 'Опасная зона'],
+  'st.resetDemo': [
+    'Demo maʼlumotlarni tiklash',
+    'Демо маълумотларни тиклаш',
+    'Сбросить демо-данные',
+  ],
+
+  // ─── Misc / notices ─────────────────────────────────────────────────
+  'demo.banner': [
+    'Bu — demo versiya. Maʼlumotlar faqat brauzeringizda saqlanadi.',
+    'Бу — демо версия. Маълумотлар фақат браузерингизда сақланади.',
+    'Это демо-версия. Данные хранятся только в вашем браузере.',
+  ],
+  'demo.exportSoon': [
+    'Eksport backend ulangach ishlaydi',
+    'Экспорт backend уланганда ишлайди',
+    'Экспорт заработает после подключения backend',
+  ],
+  'nf.title': ['Sahifa topilmadi', 'Саҳифа топилмади', 'Страница не найдена'],
+  'nf.back': ['Bosh sahifaga', 'Бош саҳифага', 'На главную'],
+} as const
+
+export type Key = keyof typeof T
+
+const INDEX: Record<Lang, 0 | 1 | 2> = { uz: 0, cy: 1, ru: 2 }
+
+export function translate(lang: Lang, key: Key): string {
+  const row = T[key]
+  return row ? row[INDEX[lang]] : key
+}
+
+/** Month labels, short form, for chart axes. */
+export const MONTHS: Record<Lang, string[]> = {
+  uz: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyn', 'Iyl', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'],
+  cy: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+  ru: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+}

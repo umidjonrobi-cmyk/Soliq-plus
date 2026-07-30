@@ -1,0 +1,110 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Brand — matches categorical slot 1 (blue) so charts and chrome agree */
+  --color-brand-50: #eef5fe;
+  --color-brand-100: #cde2fb;
+  --color-brand-200: #9ec5f4;
+  --color-brand-300: #6da7ec;
+  --color-brand-400: #3987e5;
+  --color-brand-500: #2a78d6;
+  --color-brand-600: #256abf;
+  --color-brand-700: #1c5cab;
+  --color-brand-800: #184f95;
+  --color-brand-900: #104281;
+}
+
+/* Chart + surface roles. Dark values are selected steps, not a filter flip. */
+:root {
+  color-scheme: light;
+  --surface-1: #ffffff;
+  --surface-2: #f6f7f9;
+  --surface-3: #eef0f3;
+  --border-1: #e2e5ea;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #898781;
+  --grid: #e8eaee;
+  --axis: #c3c2b7;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --good: #0ca30c;
+  --good-text: #006300;
+  --warning: #fab219;
+  --critical: #d03b3b;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --surface-1: #16181c;
+  --surface-2: #0e1013;
+  --surface-3: #1e2127;
+  --border-1: #282c33;
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted: #898781;
+  --grid: #23262c;
+  --axis: #383835;
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --good: #0ca30c;
+  --good-text: #0ca30c;
+  --warning: #fab219;
+  --critical: #d03b3b;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--surface-2);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numbers that must align vertically in columns */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-1);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Print: only the report body, on white, no chrome */
+@media print {
+  aside,
+  header {
+    display: none !important;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+  main {
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+  html,
+  body,
+  #root {
+    height: auto !important;
+    background: #fff !important;
+  }
+}
