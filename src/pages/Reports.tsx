@@ -48,8 +48,11 @@ export default function Reports() {
         [t('rp.revenue'), pl.revenueSales],
         [t('rp.cogs'), pl.cogs],
         [t('rp.grossProfit'), pl.grossProfit],
+        [t('rp.otherIncome'), pl.otherIncome],
         [t('rp.opex'), pl.sellingExp + pl.adminExp + pl.otherOpEx],
         [t('rp.operProfit'), pl.operProfit],
+        [t('rp.financeExp'), pl.financeExp],
+        [t('rp.preTax'), pl.preTax],
         [t('rp.taxExpense'), pl.taxExpense],
         [t('rp.netProfit'), pl.netProfit],
       ])
@@ -158,9 +161,11 @@ export default function Reports() {
           <Row label={t('rp.revenue')} value={pl.revenueSales} />
           <Row label={t('rp.cogs')} value={-pl.cogs} tone="var(--critical)" />
           <Row label={t('rp.grossProfit')} value={pl.grossProfit} bold />
-          <Row label={t('dash.kpi.revenue')} value={pl.otherIncome} indent />
+          <Row label={t('rp.otherIncome')} value={pl.otherIncome} indent />
           <Row label={t('rp.opex')} value={-opex} tone="var(--critical)" indent />
           <Row label={t('rp.operProfit')} value={pl.operProfit} bold />
+          <Row label={t('rp.financeExp')} value={-pl.financeExp} tone="var(--critical)" indent />
+          <Row label={t('rp.preTax')} value={pl.preTax} bold />
           <Row label={t('rp.taxExpense')} value={-pl.taxExpense} tone="var(--critical)" indent />
           <div className="mt-2 flex items-center justify-between rounded-lg px-3 py-3" style={{ background: 'rgba(27,175,122,0.12)' }}>
             <span className="font-semibold" style={{ color: 'var(--good-text)' }}>{t('rp.netProfit')}</span>
