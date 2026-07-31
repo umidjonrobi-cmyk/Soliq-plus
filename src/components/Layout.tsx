@@ -13,6 +13,7 @@ import {
   Users,
   FileBarChart,
   ShieldCheck,
+  Plug,
   Settings,
   Sun,
   Moon,
@@ -63,6 +64,7 @@ const GROUPS: NavGroup[] = [
     titleKey: 'nav.group.other',
     items: [
       { to: '/app/eimzo', icon: ShieldCheck, key: 'nav.eimzo' },
+      { to: '/app/integrations', icon: Plug, key: 'nav.integrations' },
       { to: '/app/settings', icon: Settings, key: 'nav.settings' },
     ],
   },
