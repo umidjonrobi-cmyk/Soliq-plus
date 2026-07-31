@@ -1,4 +1,4 @@
-import type { Provider, ProviderId, InvoiceDraft, SendResult, ConnectionResult } from './types'
+import type { Provider, ProviderId, InvoiceDraft, SendResult, ConnectionResult, ProviderConfig } from './types'
 
 // ── Shared helpers ───────────────────────────────────────────────────────────
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms))
@@ -11,55 +11,101 @@ function fakeDocId(prefix: string): string {
 }
 
 /**
- * In this prototype the actual network call is simulated. When real credentials
- * exist they must flow through OUR server (server.js → provider) to avoid CORS
- * and keep tokens server-side; ERI signing (pkcs7) stays client-side. The
- * `live` branch below is where that server call is dropped in.
+ * Call OUR server proxy (/api/integration). Returns null if the proxy is
+ * unreachable — e.g. the Vite dev server without server.js — so the caller
+ * falls back to client-side demo simulation. In production (server.js) the
+ * proxy forwards to the real provider using env credentials.
  */
-async function simulateSend(
-  provider: string,
-  draft: InvoiceDraft,
-  configured: boolean,
-  pkcs7?: string,
-): Promise<SendResult> {
-  await delay(700)
+async function proxyCall(
+  provider: ProviderId,
+  action: 'test' | 'send',
+  payload: { config: ProviderConfig; draft?: InvoiceDraft; pkcs7?: string },
+): Promise<any | null> {
+  try {
+    const res = await fetch('/api/integration', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider, action, payload }),
+    })
+    if (!res.ok) return null
+    return await res.json()
+  } catch {
+    return null
+  }
+}
+
+async function demoConnect(configured: boolean): Promise<ConnectionResult> {
+  await delay(400)
+  return { ok: true, mode: configured ? 'live' : 'demo', message: 'ok' }
+}
+
+async function demoSend(prefix: string, draft: InvoiceDraft, configured: boolean, pkcs7?: string): Promise<SendResult> {
+  await delay(600)
   if (!draft.buyerInn || !draft.sellerInn) {
     return { ok: false, mode: configured ? 'live' : 'demo', message: 'INN missing', signed: Boolean(pkcs7) }
   }
   return {
     ok: true,
     mode: configured ? 'live' : 'demo',
-    providerDocId: fakeDocId(provider),
+    providerDocId: fakeDocId(prefix),
     status: 'sent',
     message: 'ok',
     signed: Boolean(pkcs7),
   }
 }
 
-async function simulateConnect(configured: boolean): Promise<ConnectionResult> {
-  await delay(500)
-  return { ok: true, mode: configured ? 'live' : 'demo', message: 'ok' }
+/** Build a provider from its metadata + a doc-id prefix; wire proxy + demo fallback. */
+function makeProvider(
+  meta: Provider['meta'],
+  prefix: string,
+  isConfigured: (cfg: ProviderConfig) => boolean,
+): Provider {
+  return {
+    meta,
+    isConfigured,
+    async testConnection(cfg) {
+      const r = await proxyCall(meta.id, 'test', { config: cfg })
+      if (r) return { ok: Boolean(r.ok), mode: r.mode || 'demo', message: r.message || '' }
+      return demoConnect(isConfigured(cfg))
+    },
+    async sendInvoice(draft, cfg, pkcs7) {
+      const r = await proxyCall(meta.id, 'send', { config: cfg, draft, pkcs7 })
+      if (r) {
+        return {
+          ok: Boolean(r.ok),
+          mode: r.mode || 'demo',
+          providerDocId: r.providerDocId,
+          status: r.status,
+          message: r.message || '',
+          signed: Boolean(r.signed ?? pkcs7),
+        }
+      }
+      return demoSend(prefix, draft, isConfigured(cfg), pkcs7)
+    },
+  }
 }
 
-// ── DIDOX ────────────────────────────────────────────────────────────────────
-const didox: Provider = {
-  meta: {
+// ── DIDOX — INN + parol (Model 1: har mijoz o'z hisobi; partner token serverda) ─
+const didox = makeProvider(
+  {
     id: 'didox',
     name: 'DIDOX',
     site: 'didox.uz',
-    docsUrl: 'https://api.didox.uz/',
-    baseUrl: 'https://api.didox.uz/v1',
+    docsUrl: 'https://api-docs.didox.uz/',
+    baseUrl: 'https://api-partners.didox.uz',
     descKey: 'int.didox.desc',
-    authFields: [{ key: 'token', labelKey: 'int.field.token', type: 'password', placeholder: 'DIDOX API key' }],
+    authFields: [
+      { key: 'inn', labelKey: 'co.inn', type: 'text', placeholder: '3XX XXX XXX' },
+      { key: 'password', labelKey: 'int.field.password', type: 'password' },
+    ],
   },
-  isConfigured: (cfg) => Boolean(cfg.token),
-  testConnection: (cfg) => simulateConnect(Boolean(cfg.token)),
-  sendInvoice: (draft, cfg, pkcs7) => simulateSend('DDX', draft, Boolean(cfg.token), pkcs7),
-}
+  'DDX',
+  (cfg) => Boolean(cfg.inn && cfg.password),
+)
 
 // ── Faktura.uz (E-Faktura) ───────────────────────────────────────────────────
-const faktura: Provider = {
-  meta: {
+const faktura = makeProvider(
+  {
     id: 'faktura',
     name: 'Faktura.uz',
     site: 'faktura.uz',
@@ -71,14 +117,13 @@ const faktura: Provider = {
       { key: 'password', labelKey: 'int.field.password', type: 'password' },
     ],
   },
-  isConfigured: (cfg) => Boolean(cfg.login && cfg.password),
-  testConnection: (cfg) => simulateConnect(Boolean(cfg.login && cfg.password)),
-  sendInvoice: (draft, cfg, pkcs7) => simulateSend('EFV', draft, Boolean(cfg.login && cfg.password), pkcs7),
-}
+  'EFV',
+  (cfg) => Boolean(cfg.login && cfg.password),
+)
 
 // ── SOLIQ Servis ─────────────────────────────────────────────────────────────
-const soliqservis: Provider = {
-  meta: {
+const soliqservis = makeProvider(
+  {
     id: 'soliqservis',
     name: 'SOLIQ Servis',
     site: 'soliqservis.uz',
@@ -87,10 +132,9 @@ const soliqservis: Provider = {
     descKey: 'int.soliqservis.desc',
     authFields: [{ key: 'token', labelKey: 'int.field.token', type: 'password', placeholder: 'API token' }],
   },
-  isConfigured: (cfg) => Boolean(cfg.token),
-  testConnection: (cfg) => simulateConnect(Boolean(cfg.token)),
-  sendInvoice: (draft, cfg, pkcs7) => simulateSend('SLS', draft, Boolean(cfg.token), pkcs7),
-}
+  'SLS',
+  (cfg) => Boolean(cfg.token),
+)
 
 export const PROVIDERS: Record<ProviderId, Provider> = { didox, faktura, soliqservis }
 export const PROVIDER_LIST: Provider[] = [didox, faktura, soliqservis]

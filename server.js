@@ -10,6 +10,7 @@ import { join, extname, normalize, basename } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { randomUUID } from 'node:crypto'
 import { parseMultipart } from './lib/multipart.js'
+import { handleIntegration } from './lib/integrations-server.js'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 const DIST = join(__dirname, 'dist')
@@ -177,6 +178,17 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'POST' && urlPath === '/api/upload') {
       return await handleUpload(req, res)
+    }
+    if (req.method === 'POST' && urlPath === '/api/integration') {
+      let payload
+      try {
+        const raw = await readBody(req, 512 * 1024)
+        payload = JSON.parse(raw.toString('utf8'))
+      } catch {
+        return sendJSON(res, 400, { ok: false, message: 'Invalid JSON' })
+      }
+      const result = await handleIntegration(payload)
+      return sendJSON(res, result.ok ? 200 : 200, result)
     }
     if (req.method === 'GET' && urlPath === '/api/uploads') {
       return sendJSON(res, 200, await readIndex())
