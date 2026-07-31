@@ -85,6 +85,28 @@ const T = {
     'Демо режим: исталган почта ва парол билан киринг',
     'Демо-режим: войдите с любой почтой и паролем',
   ],
+  'auth.demoLogin': ['Demo bilan kirish', 'Демо билан кириш', 'Войти через демо'],
+  'auth.or': ['yoki', 'ёки', 'или'],
+  'auth.err.emailTaken': [
+    'Bu email allaqachon roʻyxatdan oʻtgan',
+    'Бу email аллақачон рўйхатдан ўтган',
+    'Этот e-mail уже зарегистрирован',
+  ],
+  'auth.err.invalidCreds': [
+    'Email yoki parol notoʻgʻri',
+    'Email ёки парол нотўғри',
+    'Неверный e-mail или пароль',
+  ],
+  'auth.registered': [
+    'Roʻyxatdan oʻtdingiz — xush kelibsiz!',
+    'Рўйхатдан ўтдингиз — хуш келибсиз!',
+    'Вы зарегистрированы — добро пожаловать!',
+  ],
+  'auth.loginHint': [
+    'Roʻyxatdan oʻtgan email va parolingiz bilan kiring',
+    'Рўйхатдан ўтган email ва паролингиз билан киринг',
+    'Войдите с зарегистрированными e-mail и паролем',
+  ],
   'auth.err.email': [
     "To'g'ri elektron pochta kiriting",
     'Тўғри электрон почта киритинг',

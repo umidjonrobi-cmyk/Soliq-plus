@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Sun, Moon, ArrowLeft } from 'lucide-react'
+import { Sun, Moon, ArrowLeft, Play } from 'lucide-react'
 import { useT, LANGS } from '../i18n'
 import { useStore } from '../store'
 import { Field, Input, Button } from '../components/ui'
-import { companies } from '../data/mock'
+import { registerAccount, verifyAccount, ensureDemoAccount } from '../lib/authLocal'
 
 function Shell({ children }: { children: React.ReactNode }) {
   const { t, lang, setLang } = useT()
@@ -67,20 +67,37 @@ const emailOk = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
 
 export function Login() {
   const { t } = useT()
-  const { login } = useStore()
+  const { login, notify } = useStore()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('demo@uzbalance.uz')
-  const [password, setPassword] = useState('demo123')
-  const [err, setErr] = useState<{ email?: string; password?: string }>({})
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [err, setErr] = useState<{ email?: string; password?: string; form?: string }>({})
+  const [busy, setBusy] = useState(false)
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault()
     const next: typeof err = {}
     if (!emailOk(email)) next.email = t('auth.err.email')
     if (password.length < 6) next.password = t('auth.err.password')
     setErr(next)
     if (Object.keys(next).length) return
-    login({ name: 'Nilufar Yusupova', email, company: companies[0].name })
+    setBusy(true)
+    const user = await verifyAccount(email, password)
+    setBusy(false)
+    if (!user) {
+      setErr({ form: t('auth.err.invalidCreds') })
+      return
+    }
+    login(user)
+    navigate('/app')
+  }
+
+  async function demoLogin() {
+    setBusy(true)
+    const user = await ensureDemoAccount()
+    setBusy(false)
+    login(user)
+    notify(t('common.demo'))
     navigate('/app')
   }
 
@@ -90,7 +107,7 @@ export function Login() {
         {t('auth.loginTitle')}
       </h1>
       <p className="mt-1.5 text-sm" style={{ color: 'var(--text-secondary)' }}>
-        {t('auth.loginSub')}
+        {t('auth.loginHint')}
       </p>
 
       <form className="mt-6 space-y-4" onSubmit={submit}>
@@ -100,6 +117,11 @@ export function Login() {
         <Field label={t('auth.password')} error={err.password}>
           <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" autoComplete="current-password" />
         </Field>
+        {err.form && (
+          <div className="rounded-lg px-3 py-2 text-sm" style={{ background: 'rgba(208,59,59,0.10)', color: 'var(--critical)' }}>
+            {err.form}
+          </div>
+        )}
         <div className="flex items-center justify-between text-sm">
           <label className="inline-flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
             <input type="checkbox" defaultChecked className="accent-[#2a78d6]" /> {t('auth.remember')}
@@ -108,14 +130,20 @@ export function Login() {
             {t('auth.forgot')}
           </a>
         </div>
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" disabled={busy}>
           {t('auth.login')}
         </Button>
       </form>
 
-      <div className="mt-4 rounded-lg border px-3 py-2 text-xs" style={{ borderColor: 'var(--border-1)', color: 'var(--text-muted)' }}>
-        {t('auth.demoHint')}
+      {/* Demo — alohida, tez kirish */}
+      <div className="my-4 flex items-center gap-3 text-xs" style={{ color: 'var(--text-muted)' }}>
+        <span className="h-px flex-1" style={{ background: 'var(--border-1)' }} />
+        {t('auth.or')}
+        <span className="h-px flex-1" style={{ background: 'var(--border-1)' }} />
       </div>
+      <Button variant="outline" className="w-full" onClick={demoLogin} disabled={busy}>
+        <Play size={15} /> {t('auth.demoLogin')}
+      </Button>
 
       <p className="mt-6 text-center text-sm" style={{ color: 'var(--text-secondary)' }}>
         {t('auth.noAccount')}{' '}
@@ -129,15 +157,16 @@ export function Login() {
 
 export function Register() {
   const { t } = useT()
-  const { login } = useStore()
+  const { login, notify } = useStore()
   const navigate = useNavigate()
   const [form, setForm] = useState({ name: '', company: '', email: '', password: '', confirm: '' })
   const [agree, setAgree] = useState(true)
   const [err, setErr] = useState<Record<string, string>>({})
+  const [busy, setBusy] = useState(false)
 
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [k]: e.target.value }))
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault()
     const next: Record<string, string> = {}
     if (!form.name.trim()) next.name = t('auth.err.required')
@@ -148,7 +177,15 @@ export function Register() {
     else if (form.confirm !== form.password) next.confirm = t('auth.err.confirmMismatch')
     setErr(next)
     if (Object.keys(next).length || !agree) return
-    login({ name: form.name, email: form.email, company: form.company })
+    setBusy(true)
+    const res = await registerAccount({ name: form.name, company: form.company, email: form.email, password: form.password })
+    setBusy(false)
+    if (!res.ok) {
+      setErr({ email: t('auth.err.emailTaken') })
+      return
+    }
+    login(res.user)
+    notify(t('auth.registered'))
     navigate('/app')
   }
 
@@ -181,7 +218,7 @@ export function Register() {
           <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 accent-[#2a78d6]" />
           {t('auth.agree')}
         </label>
-        <Button type="submit" className="w-full" disabled={!agree}>
+        <Button type="submit" className="w-full" disabled={!agree || busy}>
           {t('auth.register')}
         </Button>
       </form>
