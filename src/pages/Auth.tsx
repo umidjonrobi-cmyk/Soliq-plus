@@ -5,6 +5,7 @@ import { useT, LANGS } from '../i18n'
 import { useStore } from '../store'
 import { Field, Input, Button } from '../components/ui'
 import { registerAccount, verifyAccount, ensureDemoAccount } from '../lib/authLocal'
+import { supabase, isSupabaseConfigured } from '../lib/supabase'
 
 function Shell({ children }: { children: React.ReactNode }) {
   const { t, lang, setLang } = useT()
@@ -82,6 +83,18 @@ export function Login() {
     setErr(next)
     if (Object.keys(next).length) return
     setBusy(true)
+
+    if (isSupabaseConfigured) {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      setBusy(false)
+      if (error) {
+        setErr({ form: t('auth.err.invalidCreds') })
+        return
+      }
+      navigate('/app') // session listener sets the user
+      return
+    }
+
     const user = await verifyAccount(email, password)
     setBusy(false)
     if (!user) {
@@ -94,6 +107,27 @@ export function Login() {
 
   async function demoLogin() {
     setBusy(true)
+    if (isSupabaseConfigured) {
+      const creds = { email: 'demo@uzbalance.uz', password: 'demo1234' }
+      let res = await supabase.auth.signInWithPassword(creds)
+      if (res.error) {
+        // First run — create the shared demo account, then sign in.
+        await supabase.auth.signUp({
+          ...creds,
+          options: { data: { full_name: 'Demo foydalanuvchi', company_name: '"NUR SAVDO" MChJ' } },
+        })
+        res = await supabase.auth.signInWithPassword(creds)
+      }
+      setBusy(false)
+      if (res.error) {
+        setErr({ form: res.error.message })
+        return
+      }
+      notify(t('common.demo'))
+      navigate('/app')
+      return
+    }
+
     const user = await ensureDemoAccount()
     setBusy(false)
     login(user)
@@ -163,6 +197,7 @@ export function Register() {
   const [agree, setAgree] = useState(true)
   const [err, setErr] = useState<Record<string, string>>({})
   const [busy, setBusy] = useState(false)
+  const [confirmSent, setConfirmSent] = useState(false)
 
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [k]: e.target.value }))
 
@@ -178,6 +213,32 @@ export function Register() {
     setErr(next)
     if (Object.keys(next).length || !agree) return
     setBusy(true)
+
+    if (isSupabaseConfigured) {
+      const { data, error } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+        options: {
+          data: { full_name: form.name, company_name: form.company },
+          emailRedirectTo: `${window.location.origin}/login`,
+        },
+      })
+      setBusy(false)
+      if (error) {
+        if (/registered|exists/i.test(error.message)) setErr({ email: t('auth.err.emailTaken') })
+        else setErr({ email: error.message })
+        return
+      }
+      // Confirm-email ON → no session yet; ask the user to check their inbox.
+      if (!data.session) {
+        setConfirmSent(true)
+        return
+      }
+      notify(t('auth.registered'))
+      navigate('/app') // session listener sets the user
+      return
+    }
+
     const res = await registerAccount({ name: form.name, company: form.company, email: form.email, password: form.password })
     setBusy(false)
     if (!res.ok) {
@@ -187,6 +248,30 @@ export function Register() {
     login(res.user)
     notify(t('auth.registered'))
     navigate('/app')
+  }
+
+  if (confirmSent) {
+    return (
+      <Shell>
+        <div className="text-center">
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl" style={{ background: 'rgba(42,120,214,0.12)' }}>
+            <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="#2a78d6" strokeWidth="2">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="m3 7 9 6 9-6" />
+            </svg>
+          </div>
+          <h1 className="mt-4 text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+            {t('auth.confirmTitle')}
+          </h1>
+          <p className="mt-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+            {t('auth.confirmSent')} <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{form.email}</span>
+          </p>
+          <Link to="/login" className="mt-6 inline-block rounded-lg px-5 py-2.5 text-sm font-semibold text-white" style={{ background: '#2a78d6' }}>
+            {t('auth.login')}
+          </Link>
+        </div>
+      </Shell>
+    )
   }
 
   return (

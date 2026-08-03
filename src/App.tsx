@@ -21,7 +21,14 @@ import Settings from './pages/Settings'
 import NotFound from './pages/NotFound'
 
 function Protected({ children }: { children: ReactNode }) {
-  const { user } = useStore()
+  const { user, authReady } = useStore()
+  if (!authReady) {
+    return (
+      <div className="grid min-h-screen place-items-center" style={{ background: 'var(--surface-2)', color: 'var(--text-muted)' }}>
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-current border-t-transparent" />
+      </div>
+    )
+  }
   if (!user) return <Navigate to="/login" replace />
   return <Layout>{children}</Layout>
 }

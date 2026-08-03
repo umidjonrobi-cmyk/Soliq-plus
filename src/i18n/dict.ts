@@ -107,6 +107,12 @@ const T = {
     'Рўйхатдан ўтган email ва паролингиз билан киринг',
     'Войдите с зарегистрированными e-mail и паролем',
   ],
+  'auth.confirmTitle': ['Emailingizni tasdiqlang', 'Электрон почтани тасдиқланг', 'Подтвердите e-mail'],
+  'auth.confirmSent': [
+    'Tasdiqlash havolasi yuborildi:',
+    'Тасдиқлаш ҳаволаси юборилди:',
+    'Ссылка для подтверждения отправлена на:',
+  ],
   'auth.err.email': [
     "To'g'ri elektron pochta kiriting",
     'Тўғри электрон почта киритинг',
