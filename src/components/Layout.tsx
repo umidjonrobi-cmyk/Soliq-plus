@@ -27,7 +27,6 @@ import type { LucideIcon } from 'lucide-react'
 import { useT, LANGS } from '../i18n'
 import type { Key } from '../i18n/dict'
 import { useStore } from '../store'
-import { companies } from '../data/mock'
 import { Toast } from './ui'
 
 type NavItem = { to: string; icon: LucideIcon; key: Key }
@@ -112,10 +111,12 @@ function LangSwitch() {
 }
 
 function CompanyPicker() {
-  const { companyId, setCompanyId } = useStore()
+  const { companies, companyId, setCompanyId, currentCompany } = useStore()
   const { t } = useT()
   const [open, setOpen] = useState(false)
-  const current = companies.find((c) => c.id === companyId) ?? companies[0]
+  const current = currentCompany
+
+  if (!current) return null
 
   return (
     <div className="relative">

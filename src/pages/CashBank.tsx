@@ -3,17 +3,17 @@ import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 import { useT } from '../i18n'
 import { Card, SectionTitle, DataTable } from '../components/ui'
 import type { Col } from '../components/ui'
-import { cashOps, bankOps, cashOpening, bankOpening, pick, companies } from '../data/mock'
+import { cashOps, bankOps, cashOpening, bankOpening, pick } from '../data/mock'
 import type { Movement } from '../data/mock'
 import { money, moneyShort, date } from '../lib/format'
 import { useStore } from '../store'
 
 function Register({ mode }: { mode: 'cash' | 'bank' }) {
   const { t, lang } = useT()
-  const { companyId } = useStore()
+  const { currentCompany } = useStore()
   const ops = mode === 'cash' ? cashOps : bankOps
   const opening = mode === 'cash' ? cashOpening : bankOpening
-  const company = companies.find((c) => c.id === companyId) ?? companies[0]
+  const company = currentCompany
 
   const sorted = useMemo(() => [...ops].sort((a, b) => a.date.localeCompare(b.date)), [ops])
   const totalIn = ops.filter((o) => o.kind === 'in').reduce((s, o) => s + o.amount, 0)
@@ -46,20 +46,20 @@ function Register({ mode }: { mode: 'cash' | 'bank' }) {
     <div>
       <SectionTitle title={t(mode === 'cash' ? 'cb.cashTitle' : 'cb.bankTitle')} subtitle={t(mode === 'cash' ? 'cb.cashSub' : 'cb.bankSub')} />
 
-      {mode === 'bank' && (
+      {mode === 'bank' && company && (company.bankAccount || company.bankName || company.mfo) && (
         <Card className="mb-4">
           <div className="grid gap-3 text-sm sm:grid-cols-3">
             <div>
               <div className="text-xs" style={{ color: 'var(--text-muted)' }}>{t('cb.account')}</div>
-              <div className="tnum font-medium" style={{ color: 'var(--text-primary)' }}>{company.bankAccount}</div>
+              <div className="tnum font-medium" style={{ color: 'var(--text-primary)' }}>{company.bankAccount || '—'}</div>
             </div>
             <div>
               <div className="text-xs" style={{ color: 'var(--text-muted)' }}>{t('cb.bankName')}</div>
-              <div className="font-medium" style={{ color: 'var(--text-primary)' }}>{pick(company.bankName, lang)}</div>
+              <div className="font-medium" style={{ color: 'var(--text-primary)' }}>{company.bankName || '—'}</div>
             </div>
             <div>
               <div className="text-xs" style={{ color: 'var(--text-muted)' }}>{t('cb.mfo')}</div>
-              <div className="tnum font-medium" style={{ color: 'var(--text-primary)' }}>{company.mfo}</div>
+              <div className="tnum font-medium" style={{ color: 'var(--text-primary)' }}>{company.mfo || '—'}</div>
             </div>
           </div>
         </Card>

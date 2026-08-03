@@ -5,14 +5,13 @@ import { Card, SectionTitle, Button, Badge } from '../components/ui'
 import { useStore } from '../store'
 import { listCertificates, signText } from '../lib/eimzo'
 import type { Certificate } from '../lib/eimzo'
-import { companies } from '../data/mock'
 
 type Status = 'detecting' | 'ready' | 'notfound'
 
 export default function Eimzo() {
   const { t } = useT()
-  const { notify, companyId } = useStore()
-  const company = companies.find((c) => c.id === companyId) ?? companies[0]
+  const { notify, currentCompany } = useStore()
+  const company = currentCompany
 
   const [status, setStatus] = useState<Status>('detecting')
   const [certs, setCerts] = useState<Certificate[]>([])
@@ -42,8 +41,8 @@ export default function Eimzo() {
     const today = new Date().toISOString().slice(0, 10)
     setDoc(
       `UZBalance — ${t('eri.document')}\n` +
-        `${company.name}\n` +
-        `${t('co.inn')}: ${company.inn}\n` +
+        `${company?.name ?? ''}\n` +
+        `${t('co.inn')}: ${company?.inn ?? '—'}\n` +
         `${t('common.date')}: ${today}\n` +
         `——————————————————————————\n` +
         `Buxgalteriya balansi tasdiqlandi.`,

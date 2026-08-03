@@ -1,11 +1,28 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { companies } from './data/mock'
+import { companies as mockCompanies } from './data/mock'
 import { supabase, isSupabaseConfigured } from './lib/supabase'
 import type { Session } from '@supabase/supabase-js'
+import { listCompanies, seedIfNeeded } from './lib/db'
+import type { UiCompany } from './lib/db'
 
 type Theme = 'light' | 'dark'
 type User = { name: string; email: string; company: string }
+
+/** Demo/offline companies mapped to the unified UI shape (latin strings). */
+const mockUi: UiCompany[] = mockCompanies.map((c) => ({
+  id: c.id,
+  name: c.name,
+  inn: c.inn,
+  oked: c.oked,
+  director: c.director,
+  accountant: c.accountant,
+  address: c.address[0],
+  taxMode: c.taxMode,
+  bankAccount: c.bankAccount,
+  bankName: c.bankName[0],
+  mfo: c.mfo,
+}))
 
 type Store = {
   user: User | null
@@ -15,8 +32,11 @@ type Store = {
   logout: () => void
   theme: Theme
   toggleTheme: () => void
+  companies: UiCompany[]
+  currentCompany: UiCompany | null
   companyId: string
   setCompanyId: (id: string) => void
+  reloadCompanies: () => Promise<void>
   toast: string | null
   notify: (msg: string) => void
 }
@@ -58,7 +78,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   })
   const [authReady, setAuthReady] = useState(!isSupabaseConfigured)
   const [theme, setTheme] = useState<Theme>(() => (readLS('uzb.theme') as Theme) || 'light')
-  const [companyId, setCompanyIdState] = useState<string>(() => readLS('uzb.company') || companies[0].id)
+  const [companies, setCompanies] = useState<UiCompany[]>(isSupabaseConfigured ? [] : mockUi)
+  const [companyId, setCompanyIdState] = useState<string>(() => readLS('uzb.company') || mockCompanies[0].id)
   const [toast, setToast] = useState<string | null>(null)
 
   // Sync auth state from Supabase when configured.
@@ -79,6 +100,34 @@ export function AppProvider({ children }: { children: ReactNode }) {
       sub.subscription.unsubscribe()
     }
   }, [])
+
+  const loadCompanies = useCallback(async () => {
+    const list = await listCompanies()
+    setCompanies(list)
+    setCompanyIdState((prev) => (list.some((c) => c.id === prev) ? prev : list[0]?.id ?? ''))
+  }, [])
+
+  // Load the signed-in user's own companies from Supabase (seed on first login).
+  useEffect(() => {
+    if (!isSupabaseConfigured) return
+    if (!user) {
+      setCompanies([])
+      return
+    }
+    let active = true
+    ;(async () => {
+      try {
+        await seedIfNeeded()
+        if (!active) return
+        await loadCompanies()
+      } catch (e) {
+        console.error('[UZBalance] company load failed', e)
+      }
+    })()
+    return () => {
+      active = false
+    }
+  }, [user?.email, loadCompanies])
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -115,9 +164,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     window.setTimeout(() => setToast(null), 2600)
   }, [])
 
+  const reloadCompanies = useCallback(async () => {
+    if (isSupabaseConfigured) await loadCompanies()
+  }, [loadCompanies])
+
+  const currentCompany = useMemo(
+    () => companies.find((c) => c.id === companyId) ?? companies[0] ?? null,
+    [companies, companyId],
+  )
+
   const value = useMemo(
-    () => ({ user, authReady, login, logout, theme, toggleTheme, companyId, setCompanyId, toast, notify }),
-    [user, authReady, login, logout, theme, toggleTheme, companyId, setCompanyId, toast, notify],
+    () => ({
+      user, authReady, login, logout, theme, toggleTheme,
+      companies, currentCompany, companyId, setCompanyId, reloadCompanies,
+      toast, notify,
+    }),
+    [user, authReady, login, logout, theme, toggleTheme, companies, currentCompany, companyId, setCompanyId, reloadCompanies, toast, notify],
   )
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

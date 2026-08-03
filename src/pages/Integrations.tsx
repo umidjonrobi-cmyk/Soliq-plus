@@ -7,13 +7,13 @@ import { PROVIDER_LIST } from '../lib/integrations/providers'
 import type { Provider } from '../lib/integrations/types'
 import { getConfig, saveConfig, clearConfig, getActiveProvider, setActiveProvider } from '../lib/integrations/config'
 import { buildDraftFromInvoice } from '../lib/integrations/draft'
-import { invoices, companies } from '../data/mock'
+import { invoices } from '../data/mock'
 import { listCertificates, signText } from '../lib/eimzo'
 
 export default function Integrations() {
   const { t, lang } = useT()
-  const { notify, companyId } = useStore()
-  const company = companies.find((c) => c.id === companyId) ?? companies[0]
+  const { notify, currentCompany } = useStore()
+  const company = currentCompany
 
   const [active, setActive] = useState(getActiveProvider())
   const [editing, setEditing] = useState<Provider | null>(null)
